@@ -1,0 +1,204 @@
+#include <iostream>
+#include <queue>
+#include <stdexcept>
+#include <sstream>
+using namespace std;
+// Function to delete a specific element from the queue
+bool deleteElement(queue<int>& q, int element) {
+    queue<int> tempQueue;
+    bool found = false;
+    while (!q.empty()) {
+        if (q.front() == element) {
+            found = true;
+        }
+        else {
+            tempQueue.push(q.front());
+        }
+        q.pop();
+    }
+    while (!tempQueue.empty()) {
+        q.push(tempQueue.front());
+        tempQueue.pop();
+    }
+    return found;
+}
+// Function to insert 1 into the front of queue
+void enqueueToFront(queue<int>& q, int element) {
+    // Move elements to a temporary queue
+    queue<int> tempQueue;
+    while (!q.empty()) {
+        tempQueue.push(q.front());
+        q.pop();
+    }
+    // Add the new element to the front
+    q.push(element);
+    // Move the elements back to the original queue
+    while (!tempQueue.empty()) {
+        q.push(tempQueue.front());
+        tempQueue.pop();
+    }
+}
+// Function to insert an element at a specific position in the queue
+void insertElement(queue<int>& q, int element, size_t position) {
+    // Create a temporary queue to store elements
+    queue<int> tempQueue;
+    // Move elements to tempQueue until the specified position is reached
+    while (!q.empty() && position > 0) {
+        tempQueue.push(q.front());
+        q.pop();
+        position--;
+    }
+    // Insert the new element at the specified position
+    tempQueue.push(element);
+    // Move the remaining elements back to the original queue
+    while (!q.empty()) {
+        tempQueue.push(q.front());
+        q.pop();
+    }
+    // Copy elements back to the original queue
+    q = tempQueue;
+}
+int main() {
+    queue<int> myQueue; // Create a queue of integers
+    while (true) {
+        cout << "\n\t\t\t\t\t\tQueue Operations:\n\n";
+        cout << "\t\t\t\t\t\t1. Enqueue\n";
+        cout << "\t\t\t\t\t\t2. Dequeue\n";
+        cout << "\t\t\t\t\t\t3. Front Element\n";
+        cout << "\t\t\t\t\t\t4. Check if Queue is Empty\n";
+        cout << "\t\t\t\t\t\t5. Print Queue\n";
+        cout << "\t\t\t\t\t\t6. Delete Queue\n";
+        cout << "\t\t\t\t\t\t7. Delete Specific Element\n";
+        cout << "\t\t\t\t\t\t8. Insert Element at Specific Position\n";
+        cout << "\t\t\t\t\t\t9. Exit\n\n";
+        int choice;
+        cout << "\t\t\t\t\t\tEnter your choice (1-9): ";
+        cin >> choice;
+        cout << endl;
+        int queueSize; // Added variable to store queue size
+        switch (choice) {
+        case 1: {
+            string input;
+            cout << "Enter the elements to enqueue (separated by spaces): ";
+            cin.ignore(); // Ignore the newline character left in the buffer
+            getline(cin, input);
+
+            istringstream iss(input);
+            int element;
+            while (iss >> element) {
+                if (element == 1) {
+                    // Add element to the front if it's 1
+                    enqueueToFront(myQueue, element);
+                }
+                else {
+                    // Otherwise, add element to the back
+                    myQueue.push(element);
+                }
+            }
+            cout << "Elements enqueued successfully.\n";
+            queueSize = myQueue.size();
+            cout << "Queue size: " << queueSize << "\n";
+            break;
+        }
+        case 2: {
+            if (!myQueue.empty()) {
+                cout << myQueue.front() << " dequeued.\n";
+                myQueue.pop();
+            }
+            else {
+                cout << "Queue is empty. Cannot dequeue.\n";
+            }
+            queueSize = myQueue.size();
+            cout << "Queue size: " << queueSize << "\n";
+            break;
+        }
+        case 3: {
+            if (!myQueue.empty()) {
+                cout << "Front element: " << myQueue.front() << "\n";
+            }
+            else {
+                cout << "Queue is empty. No front element.\n";
+            }
+            queueSize = myQueue.size();
+            cout << "Queue size: " << queueSize << "\n";
+            break;
+        }
+        case 4: {
+            cout << "Queue is " << (myQueue.empty() ? "empty" : "not empty") << ".\n";
+            queueSize = myQueue.size();
+            cout << "Queue size: " << queueSize << "\n";
+            break;
+        }
+        case 5: {
+            cout << "Elements in the queue: ";
+            if (!myQueue.empty()) {
+                queue<int> tempQueue = myQueue;
+                while (!tempQueue.empty()) {
+                    cout << tempQueue.front() << " ";
+                    tempQueue.pop();
+                }
+            }
+            else {
+                cout << "Queue is empty.";
+            }
+            cout << "\n";
+            queueSize = myQueue.size();
+            cout << "Queue size: " << queueSize << "\n";
+            break;
+        }
+        case 6: {
+            myQueue = queue<int>(); // Clear the entire queue
+            cout << "Queue deleted.\n";
+            queueSize = myQueue.size();
+            cout << "Queue size: " << queueSize << "\n";
+            break;
+        }
+        case 7: {
+            int elementToDelete;
+            cout << "Enter the element to delete: ";
+            cin >> elementToDelete;
+            bool deleted = deleteElement(myQueue, elementToDelete);
+            if (deleted) {
+                cout << elementToDelete << " deleted from the queue.\n";
+            }
+            else {
+                cout << elementToDelete << " not found in the queue.\n";
+            }
+            cout << "Current queue: ";
+            if (!myQueue.empty()) {
+                queue<int> tempQueue = myQueue;
+                while (!tempQueue.empty()) {
+                    cout << tempQueue.front() << " ";
+                    tempQueue.pop();
+                }
+            }
+            else {
+                cout << "Queue is empty.";
+            }
+            cout << "\n";
+            queueSize = myQueue.size();
+            cout << "Queue size: " << queueSize << "\n";
+            break;
+        }
+        case 8: {
+            int element, position;
+            cout << "Enter the element to insert: ";
+            cin >> element;
+            cout << "Enter the position to insert at: ";
+            cin >> position;
+            insertElement(myQueue, element, position);
+            cout << element << " inserted at position " << position << ".\n";
+            queueSize = myQueue.size();
+            cout << "Queue size: " << queueSize << "\n";
+            break;
+        }
+        case 9: {
+            cout << "Exiting program. Goodbye!\n";
+            return 0;
+        }
+        default:
+            cerr << "Invalid choice. Please enter a number between 1 and 9.\n";
+        }
+    }
+    return 0;
+}
